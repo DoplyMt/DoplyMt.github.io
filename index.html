@@ -2,66 +2,324 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>企业员工薪酬数据录入系统</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能课程表系统 (支持动态编辑)</title>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f6f9; padding: 30px; }
-        .form-container { max-width: 500px; background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin: 0 auto; }
-        h2 { text-align: center; color: #333; margin-bottom: 20px; }
+        :root {
+            --primary-color: #4f46e5;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --border-color: #e2e8f0;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+        }
+        .main-layout {
+            display: flex;
+            max-width: 1400px;
+            margin: 0 auto;
+            gap: 20px;
+        }
+        .container { flex: 1; }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05);
+        }
+        h1 { margin: 0; font-size: 1.5rem; color: #0f172a; }
+        
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .btn:hover { background-color: #4338ca; }
+        .btn-danger { background-color: #ef4444; margin-top: 10px; width: 100%;}
+        .btn-danger:hover { background-color: #dc2626; }
+
+        /* 课表网格基础样式 */
+        .timetable-grid {
+            display: grid;
+            grid-template-columns: 80px repeat(7, 1fr);
+            gap: 1px;
+            background-color: var(--border-color);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.05);
+        }
+        .grid-header, .time-slot, .course-cell {
+            background-color: var(--card-bg);
+            padding: 15px 10px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 90px;
+        }
+        .grid-header { background-color: #f1f5f9; font-weight: 600; color: #475569; min-height: 40px; }
+        .time-slot { background-color: #f8fafc; font-weight: 500; color: #64748b; font-size: 0.85rem; }
+        .course-cell { cursor: pointer; transition: background-color 0.2s; }
+        .course-cell:hover { background-color: #f1f5f9; }
+
+        /* 课程方块美化 */
+        .course-card {
+            width: 100%;
+            height: 100%;
+            padding: 8px;
+            border-radius: 8px;
+            color: white;
+            font-size: 0.85rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-sizing: border-box;
+            box-shadow: 0 2px 4px rgb(0 0 0 / 0.05);
+        }
+        .course-name { font-weight: bold; margin-bottom: 4px; text-align: left; }
+        .course-info { font-size: 0.75rem; opacity: 0.9; text-align: left; width: 100%; }
+
+        /* 右侧编辑面板样式 */
+        .editor-panel {
+            width: 320px;
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.05);
+            height: fit-content;
+            border: 1px solid var(--border-color);
+        }
         .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; color: #666; }
-        input[type="text"], input[type="number"], select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background-color: #007bff; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; }
-        button:hover { background-color: #0056b3; }
-        .message { display: none; padding: 10px; background-color: #d4edda; color: #155724; border-radius: 4px; text-align: center; margin-top: 15px; }
+        label { display: block; margin-bottom: 5px; font-size: 0.85rem; font-weight: 600; color: #475569; }
+        input, select { width: 100%; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px; box-sizing: border-box; }
+        
+        .bg-math { background: linear-gradient(135deg, #ff6b6b, #ee5253); }
+        .bg-english { background: linear-gradient(135deg, #48dbfb, #0abde3); }
+        .bg-cs { background: linear-gradient(135deg, #1dd1a1, #10ac84); }
+        .bg-physics { background: linear-gradient(135deg, #a55eea, #8854d0); }
+        .bg-general { background: linear-gradient(135deg, #ff9f43, #f39c12); }
     </style>
 </head>
 <body>
 
-<div class="form-container">
-    <h2>员工工资数据录入</h2>
-    <form id="salaryForm" onsubmit="event.preventDefault(); showSuccess();">
-        <div class="form-group">
-            <label for="empName">员工姓名：</label>
-            <input type="text" id="empName" name="empName" placeholder="请输入姓名" required>
+<div class="main-layout">
+    <div class="container">
+        <div class="header">
+            <h1>📅 智能课程表管理系统</h1>
+            <button class="btn" onclick="openNewEditor()">➕ 新增课程</button>
         </div>
+        <div class="timetable-grid" id="timetable"></div>
+    </div>
 
-        <div class="form-group">
-            <label for="department">所属部门：</label>
-            <select id="department" name="department" required>
-                <option value="">--请选择部门--</option>
-                <option value="财务部">财务部</option>
-                <option value="运营部">运营部</option>
-                <option value="人事部">人事部</option>
-                <option value="技术部">技术部</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="baseSalary">基本工资 (￥)：</label>
-            <input type="number" id="baseSalary" name="baseSalary" step="0.01" placeholder="0.00" required>
-        </div>
-
-        <div class="form-group">
-            <label for="bonus">绩效奖金 (￥)：</label>
-            <input type="number" id="bonus" name="bonus" step="0.01" placeholder="0.00" value="0.00">
-        </div>
-
-        <button type="submit" id="submitBtn">确认录入并提交</button>
-    </form>
-
-    <div id="successToast" class="message">🎉 薪酬数据录入成功！</div>
+    <div class="editor-panel">
+        <h3 id="panel-title" style="margin-top:0; margin-bottom: 20px;">编辑课程</h3>
+        <form id="courseForm" onsubmit="saveCourse(event)">
+            <input type="hidden" id="editIndex" value=""> <div class="form-group">
+                <label>课程名称</label>
+                <input type="text" id="courseName" required placeholder="如：高等数学">
+            </div>
+            <div class="form-group">
+                <label>任课老师</label>
+                <input type="text" id="teacher" required placeholder="如：张教授">
+            </div>
+            <div class="form-group">
+                <label>上课地点</label>
+                <input type="text" id="room" required placeholder="如：教一301">
+            </div>
+            <div class="form-group">
+                <label>上课时间（星期）</label>
+                <select id="day" required>
+                    <option value="1">周一</option><option value="2">周二</option>
+                    <option value="3">周三</option><option value="4">周 Thursday</option>
+                    <option value="5">周五</option><option value="6">周六</option><option value="7">周日</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>上课节次</label>
+                <select id="period" required>
+                    <option value="1">第1节 (08:00 - 09:35)</option>
+                    <option value="2">第2节 (10:05 - 11:40)</option>
+                    <option value="3">第3节 (14:00 - 15:35)</option>
+                    <option value="4">第4节 (16:05 - 17:40)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>卡片配色</label>
+                <select id="colorClass">
+                    <option value="bg-math">活力红 (理科/高数)</option>
+                    <option value="bg-english">天空蓝 (外语/文科)</option>
+                    <option value="bg-cs">极客绿 (计算机/编程)</option>
+                    <option value="bg-physics">科技紫 (物理/实验)</option>
+                    <option value="bg-general">温暖橙 (通用/通识)</option>
+                </select>
+            </div>
+            <button type="submit" class="btn" style="width: 100%;">保存课程</button>
+            <button type="button" id="deleteBtn" class="btn btn-danger" onclick="deleteCourse()" style="display:none;">删除此课程</button>
+        </form>
+    </div>
 </div>
 
 <script>
-    function showSuccess() {
-        const toast = document.getElementById('successToast');
-        toast.style.display = 'block';
-        // 3秒后自动隐藏，并清空表单
-        setTimeout(() => {
-            toast.style.display = 'none';
-            document.getElementById('salaryForm').reset();
-        }, 1000);
+// 初始化 JSON 数据
+let timetableData = {
+    "days": ["周一", "周二", "周三", "周四", "周五", "周六", "周日"],
+    "timeSlots": [
+        {"period": 1, "time": "08:00 - 09:35"},
+        {"period": 2, "time": "10:05 - 11:40"},
+        {"period": 3, "time": "14:00 - 15:35"},
+        {"period": 4, "time": "16:05 - 17:40"}
+    ],
+    "courses": [
+        //{ "day": 1, "period": 1, "name": "高等数学", "teacher": "张教授", "room": "教一301", "colorClass": "bg-math" },
+       // { "day": 2, "period": 2, "name": "Python程序设计", "teacher": "李博士", "room": "实验楼502", "colorClass": "bg-cs" }
+    ]
+};
+
+// 渲染主课表网格
+function renderTimetable() {
+    const grid = document.getElementById('timetable');
+    grid.innerHTML = ''; 
+
+    // 1. 左上角交叉空白格
+    const emptyHeader = document.createElement('div');
+    emptyHeader.className = 'grid-header';
+    emptyHeader.innerText = '节次';
+    grid.appendChild(emptyHeader);
+
+    // 2. 渲染周一到周日表头
+    timetableData.days.forEach(day => {
+        const header = document.createElement('div');
+        header.className = 'grid-header';
+        header.innerText = day;
+        grid.appendChild(header);
+    });
+
+    // 3. 循环渲染节次和格子
+    timetableData.timeSlots.forEach(slot => {
+        const timeCell = document.createElement('div');
+        timeCell.className = 'time-slot';
+        timeCell.innerHTML = `<div>第${slot.period}节</div><div style="font-size:11px; margin-top:4px; color:#94a3b8">${slot.time}</div>`;
+        grid.appendChild(timeCell);
+
+        for (let d = 1; d <= 7; d++) {
+            const courseCell = document.createElement('div');
+            courseCell.className = 'course-cell';
+            
+            // 查找当前格子的课程索引
+            const courseIndex = timetableData.courses.findIndex(c => c.day === d && c.period === slot.period);
+            
+            if (courseIndex !== -1) {
+                const course = timetableData.courses[courseIndex];
+                courseCell.innerHTML = `
+                    <div class="course-card ${course.colorClass}" onclick="openEditEditor(${courseIndex}, event)">
+                        <div class="course-name">${course.name}</div>
+                        <div class="course-info">📍${course.room}<br>👤${course.teacher}</div>
+                    </div>
+                `;
+            } else {
+                // 如果是空格子，允许点击后直接在该位置快捷新建
+                courseCell.innerHTML = `<span style="color:#cbd5e1;">-</span>`;
+                courseCell.onclick = () => openQuickNewEditor(d, slot.period);
+            }
+            grid.appendChild(courseCell);
+        }
+    });
+}
+
+// 状态 1：点击顶部或空格子，切换为“新增模式”
+function openNewEditor() {
+    document.getElementById('panel-title').innerText = "新增课程";
+    document.getElementById('editIndex').value = ""; // 清空代表新增
+    document.getElementById('courseForm').reset();
+    document.getElementById('deleteBtn').style.display = "none";
+}
+
+function openQuickNewEditor(day, period) {
+    openNewEditor();
+    document.getElementById('day').value = day;
+    document.getElementById('period').value = period;
+}
+
+// 状态 2：点击已有卡片，切换为“编辑修改模式”并回显数据
+function openEditEditor(index, event) {
+    event.stopPropagation(); // 阻止冒泡
+    document.getElementById('panel-title').innerText = "编辑课程";
+    document.getElementById('editIndex').value = index;
+    
+    const course = timetableData.courses[index];
+    document.getElementById('courseName').value = course.name;
+    document.getElementById('teacher').value = course.teacher;
+    document.getElementById('room').value = course.room;
+    document.getElementById('day').value = course.day;
+    document.getElementById('period').value = course.period;
+    document.getElementById('colorClass').value = course.colorClass;
+    
+    document.getElementById('deleteBtn').style.display = "block";
+}
+
+// 表单提交：智能判定是新增（push）还是修改（覆盖）
+function saveCourse(event) {
+    event.preventDefault();
+    const indexStr = document.getElementById('editIndex').value;
+    
+    const newCourse = {
+        name: document.getElementById('courseName').value,
+        teacher: document.getElementById('teacher').value,
+        room: document.getElementById('room').value,
+        day: parseInt(document.getElementById('day').value),
+        period: parseInt(document.getElementById('period').value),
+        colorClass: document.getElementById('colorClass').value
+    };
+
+    // 检查冲突：目标时段是否已经有其他课程存在（排除自己当前正在编辑的情况）
+    const conflictIndex = timetableData.courses.findIndex((c, idx) => 
+        c.day === newCourse.day && c.period === newCourse.period && idx.toString() !== indexStr
+    );
+    if (conflictIndex !== -1) {
+        alert(`⚠️ 保存失败：该时段已经存在课程《${timetableData.courses[conflictIndex].name}》，请先修改或删除原有课程。`);
+        return;
     }
+
+    if (indexStr === "") {
+        // 新增模式
+        timetableData.courses.push(newCourse);
+    } else {
+        // 编辑修改模式
+        timetableData.courses[parseInt(indexStr)] = newCourse;
+    }
+
+    renderTimetable(); // 刷新界面
+    openNewEditor();   // 重置表单为新增状态
+}
+
+// 删除课程
+function deleteCourse() {
+    const indexStr = document.getElementById('editIndex').value;
+    if (indexStr !== "" && confirm("确定要删除这门课程吗？")) {
+        timetableData.courses.splice(parseInt(indexStr), 1);
+        renderTimetable();
+        openNewEditor();
+    }
+}
+
+// 页面首次加载初始化
+window.onload = renderTimetable;
 </script>
 
 </body>
