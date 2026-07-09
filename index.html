@@ -2,266 +2,67 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>React 零基础通关秘籍</title>
+    <title>企业员工薪酬数据录入系统</title>
     <style>
-        :root {
-            --primary: #61dafb;
-            --bg-dark: #20232a;
-            --text-main: #282c34;
-            --accent: #e06c75;
-            --border: #ececec;
-            --code-bg: #f5f5f5;
-        }
-        
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            color: var(--text-main);
-            line-height: 1.6;
-            background-color: #fcfcfc;
-            padding-bottom: 60px;
-        }
-
-        header {
-            background-color: var(--bg-dark);
-            color: white;
-            text-align: center;
-            padding: 40px 20px;
-            border-bottom: 4px solid var(--primary);
-        }
-
-        header h1 {
-            color: var(--primary);
-            font-size: 2.2rem;
-            margin-bottom: 10px;
-        }
-
-        header p {
-            color: #a0a0a0;
-            font-size: 1.1rem;
-        }
-
-        .container {
-            max-width: 900px;
-            margin: 30px auto;
-            padding: 0 20px;
-        }
-
-        .card {
-            background: white;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 25px;
-            margin-bottom: 25px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
-        }
-
-        .card h2 {
-            font-size: 1.5rem;
-            color: var(--bg-dark);
-            margin-bottom: 15px;
-            border-left: 5px solid var(--primary);
-            padding-left: 12px;
-            display: flex;
-            align-items: center;
-        }
-
-        .card h3 {
-            font-size: 1.1rem;
-            margin: 15px 0 8px 0;
-            color: #333;
-        }
-
-        ul, ol {
-            padding-left: 20px;
-            margin-bottom: 15px;
-        }
-
-        li {
-            margin-bottom: 8px;
-        }
-
-        code {
-            background-color: var(--code-bg);
-            color: var(--accent);
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-family: Consolas, Monaco, monospace;
-            font-size: 0.9em;
-        }
-
-        pre {
-            background-color: var(--bg-dark);
-            color: #abb2bf;
-            padding: 15px;
-            border-radius: 6px;
-            overflow-x: auto;
-            font-family: Consolas, Monaco, monospace;
-            margin: 12px 0;
-            position: relative;
-        }
-
-        pre code {
-            background: none;
-            color: inherit;
-            padding: 0;
-        }
-
-        .badge {
-            background-color: #ff4d4f;
-            color: white;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            margin-left: 8px;
-        }
-
-        .success-badge {
-            background-color: #52c41a;
-        }
-
-        .tip-box {
-            background-color: #e6f7ff;
-            border-left: 4px solid #1890ff;
-            padding: 15px;
-            border-radius: 0 6px 6px 0;
-            margin: 15px 0;
-        }
-
-        .warn-box {
-            background-color: #fffbe6;
-            border-left: 4px solid #faad14;
-            padding: 15px;
-            border-radius: 0 6px 6px 0;
-            margin: 15px 0;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 15px 0;
-        }
-
-        table, th, td {
-            border: 1px solid var(--border);
-        }
-
-        th, td {
-            padding: 12px;
-            text-align: left;
-        }
-
-        th {
-            background-color: #fafafa;
-            font-weight: 600;
-        }
+        body { font-family: Arial, sans-serif; background-color: #f4f6f9; padding: 30px; }
+        .form-container { max-width: 500px; background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin: 0 auto; }
+        h2 { text-align: center; color: #333; margin-bottom: 20px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #666; }
+        input[type="text"], input[type="number"], select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background-color: #007bff; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; }
+        button:hover { background-color: #0056b3; }
+        .message { display: none; padding: 10px; background-color: #d4edda; color: #155724; border-radius: 4px; text-align: center; margin-top: 15px; }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>⚛️ React 零基础快速通关秘籍</h1>
-        <p>从纯小白到成功运行第一个 React 网页的完整心法与指南</p>
-    </header>
-
-    <div class="container">
-
-        <!-- 路线图 -->
-        <div class="card">
-            <h2>🗺️ 核心学习路线图</h2>
-            <p><strong>第一阶段（前置）</strong>：不要急着碰 React，掌握 JS 的变量、箭头函数、结构赋值以及数组 <code>map()</code> 方法。</p>
-            <p><strong>第二阶段（筑基）</strong>：聚焦于 JSX 语法、组件化开发（函数组件）、Props 传参和核心的 <code>useState</code> 与 <code>useEffect</code> Hooks。</p>
-            <p><strong>第三阶段（避坑）</strong>：现阶段<strong>忽略 Oxlint</strong>、Webpack 或高级框架，顺其自然使用脚手架中自带的 <strong>ESLint</strong> 规范代码即可。</p>
+<div class="form-container">
+    <h2>员工工资数据录入</h2>
+    <form id="salaryForm" onsubmit="event.preventDefault(); showSuccess();">
+        <div class="form-group">
+            <label for="empName">员工姓名：</label>
+            <input type="text" id="empName" name="empName" placeholder="请输入姓名" required>
         </div>
 
-        <!-- 环境配置 -->
-        <div class="card">
-            <h2>🛠️ 第一步：两大家底安装</h2>
-            <ol>
-                <li><strong>Node.js</strong>：前往官方网站 <a href="https://nodejs.org/" target="_blank">nodejs.org</a> 下载左侧的 <strong>LTS 长期支持版</strong>。</li>
-                <li><strong>VS Code</strong>：下载并完成常规安装。</li>
-            </ol>
-            <div class="tip-box">
-                <strong>验证安装：</strong>打开终端输入 <code>node -v</code> 和 <code>npm -v</code>，能打印出版本号即为成功。
-            </div>
+        <div class="form-group">
+            <label for="department">所属部门：</label>
+            <select id="department" name="department" required>
+                <option value="">--请选择部门--</option>
+                <option value="财务部">财务部</option>
+                <option value="运营部">运营部</option>
+                <option value="人事部">人事部</option>
+                <option value="技术部">技术部</option>
+            </select>
         </div>
 
-        <!-- VS Code 配置 -->
-        <div class="card">
-            <h2>🎨 第二步：VS Code 精英级配置</h2>
-            <h3>1. 推荐安装的三大插件：</h3>
-            <ul>
-                <li><code>Chinese (Simplified)</code> - 简体中文包。</li>
-                <li><code>ES7+ React/Redux/React-Native snippets</code> - 快捷键神器（输入 <code>rfce</code> 秒出组件模板）。</li>
-                <li><code>Prettier - Code formatter</code> - 代码一键美化。</li>
-            </ul>
-            <h3>2. 开启保存自动格式化：</h3>
-            <p>按 <code>Ctrl + ,</code> 打开设置 ➔ 搜索 <code>format on save</code> ➔ 勾选 <strong>Editor: Format On Save</strong>。</p>
+        <div class="form-group">
+            <label for="baseSalary">基本工资 (￥)：</label>
+            <input type="number" id="baseSalary" name="baseSalary" step="0.01" placeholder="0.00" required>
         </div>
 
-        <!-- 解决慢的问题 -->
-        <div class="card">
-            <h2>🚀 第三步：终极解决方案（解决 npm 下载慢）</h2>
-            <p>如果在 <code>npm install</code> 阶段卡死或极慢，请在 VS Code 终端里顺序执行以下国内阿里云镜像切换命令：</p>
-            <pre><code># 1. 切换为阿里云淘宝镜像源
-npm config set registry https://registry.npmmirror.com
-
-# 2. 检查是否切换成功（应该返回刚刚设置的阿里云网址）
-npm config get registry</code></pre>
+        <div class="form-group">
+            <label for="bonus">绩效奖金 (￥)：</label>
+            <input type="number" id="bonus" name="bonus" step="0.01" placeholder="0.00" value="0.00">
         </div>
 
-        <!-- 正规建项目 -->
-        <div class="card">
-            <h2>🔥 第四步：正规军建项目流程（杜绝路径报错）</h2>
-            <ol>
-                <li>在 E 盘新建空文件夹 <code>ReactProjects</code>。</li>
-                <li>用 VS Code 点击 <strong>文件 ➔ 打开文件夹</strong> 选中它。</li>
-                <li>点击菜单 <strong>终端 ➔ 新建终端</strong>（确保开局路径精准为 <code>E:\ReactProjects></code>）。</li>
-                <li>在终端里依次敲入并执行以下命令：</li>
-            </ol>
-            
-            <pre><code># ① 一键创建 React 骨架
-npm create vite@latest my-react-app -- --template react
+        <button type="submit" id="submitBtn">确认录入并提交</button>
+    </form>
 
-# ② 终端走入刚刚建好的项目口袋里
-cd my-react-app
+    <div id="successToast" class="message">🎉 薪酬数据录入成功！</div>
+</div>
 
-# ③ 下载 React 全部源码配件（速度已通过上一步起飞）
-npm install
-
-# ④ 燃火启动本地服务器！
-npm run dev</code></pre>
-
-            <div class="warn-box">
-                <strong>💡 Windows 脚本运行报错拦截？</strong><br>
-                如果弹出红字“禁止运行脚本”，点击终端右上角 <code>+</code> 号旁边的下拉箭头，切换成 <strong>Command Prompt (cmd)</strong> 终端重新粘贴命令，即可完美绕过！
-            </div>
-        </div>
-
-        <!-- 第一个代码 -->
-        <div class="card">
-            <h2>🎉 见证奇迹：修改你的第一行 React 代码</h2>
-            <p>当终端输出绿色网址 <code>http://localhost:5173/</code> 时，按住 <code>Ctrl</code> 键点击它打开浏览器。</p>
-            <p>接着在 VS Code 左侧找到 <code>src/App.jsx</code> 文件，将里面的 <code>return(...)</code> 的内容清空，修改为以下极简代码并保存：</p>
-            <pre><code>function App() {
-  return (
-    &lt;div style={{ textAlign: 'center', marginTop: '50px' }}&gt;
-      &lt;h1&gt;⚛️ 我的第一个 React 网页启动成功！&lt;/h1&gt;
-    &lt;/div&gt;
-  )
-}
-export default App</code></pre>
-            <p>回到浏览器，网页已经实时刷新，属于你的 React 旅程正式开启！</p>
-        </div>
-
-    </div>
+<script>
+    function showSuccess() {
+        const toast = document.getElementById('successToast');
+        toast.style.display = 'block';
+        // 3秒后自动隐藏，并清空表单
+        setTimeout(() => {
+            toast.style.display = 'none';
+            document.getElementById('salaryForm').reset();
+        }, 3000);
+    }
+</script>
 
 </body>
 </html>
